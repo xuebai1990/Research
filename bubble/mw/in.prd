@@ -1,0 +1,95 @@
+#MW water viscosity and difussion constant
+
+# Set up variables
+variable seed equal 1234
+variable Nrun_prd equal 9600000
+variable Nf_prd equal ${Nrun_prd}/4000
+variable Ne_prd equal 1
+variable Nr_prd equal ${Nf_prd}/${Ne_prd}
+variable dt equal 5.0
+
+variable watMoleMass equal 18.0153 # /(g/mol)
+variable nAvog equal 6.0221415e23 # Avogadro's number
+variable watMoleculeMass equal (${watMoleMass}/${nAvog}) # /(g/molecule)
+variable A3_in_cm3 equal 1e-24 # Angstrom^3 in cm^3
+#variable nAtoms equal 1000
+variable nMolecules equal 1711
+
+variable Text equal 298.0
+
+variable V equal vol
+variable T equal 298.0
+variable kB equal 1.3806504e-23
+variable atm2Pa equal 101325.0
+variable A2m equal 1.0e-10
+variable fs2s equal 1.0e-15
+variable convert equal ${atm2Pa}*${atm2Pa}*${fs2s}*${A2m}*${A2m}*${A2m}
+
+# Set up problem
+units real
+atom_style atomic
+read_restart restart.prod3
+mass 1 18.015 # mw H2O
+
+pair_style sw
+pair_coeff * * h2o.sw H2O
+
+# Define molecular group
+group water type 1
+
+# Control neighbor list
+neighbor 2.0 bin
+neigh_modify every 1 delay 0 check yes
+
+# Set time step
+timestep ${dt}
+reset_timestep 0
+
+# Define ensemble
+fix integrate all nvt temp ${Text} ${Text} 100.0
+# Remove system drift
+fix removeMomentum all momentum 1 linear 1 1 1
+
+# Quantity to compute
+compute T all temp
+compute P all pressure thermo_temp
+compute PE all pe
+compute KE all ke
+variable et equal c_PE+c_KE
+variable et2 equal v_et*v_et
+fix TempAve all ave/time ${Ne_prd} ${Nr_prd} ${Nf_prd} c_T ave one
+fix PressAve all ave/time ${Ne_prd} ${Nr_prd} ${Nf_prd} c_P ave one
+fix etAve all ave/time ${Ne_prd} ${Nr_prd} ${Nf_prd} v_et ave one
+fix et2Ave all ave/time ${Ne_prd} ${Nr_prd} ${Nf_prd} v_et2 ave one
+
+# Compute diffusion constant
+compute msd2 all msd com yes
+variable time equal step*dt
+variable md equal c_msd2[4]
+variable twopoint equal c_msd2[4]/6/(step*dt+1.0e-6)
+fix diff all vector 10 c_msd2[4]
+fix pt all print 10 "${time}   ${md}" file water_msd.prod3 screen no
+variable fitslope equal slope(f_diff)/6/(10*dt)
+
+# Compute Viscosity
+variable pxy equal pxy
+variable pxz equal pxz
+variable pyz equal pyz
+fix SS all ave/correlate 1 200 ${Nf_prd} v_pxy v_pxz v_pyz type auto file S0St3.dat ave one
+variable scale equal ${convert}/(${kB}*$T)*$V*${Ne_prd}*${dt}
+variable v11 equal trap(f_SS[3])*${scale}
+variable v22 equal trap(f_SS[4])*${scale}
+variable v33 equal trap(f_SS[5])*${scale}
+variable viscosity equal (v_v11+v_v22+v_v33)/3.0
+
+
+# Equilibrium run
+thermo_style custom step temp f_TempAve press f_PressAve f_etAve f_et2Ave v_twopoint v_fitslope v_viscosity
+thermo_modify flush yes format 6 "%20.12g" format 7 "%20.12g"
+thermo ${Nf_prd}
+
+dump trj all atom ${Nf_prd} wat.lammpstrj.prd3
+
+run ${Nrun_prd}
+
+write_restart restart.prod3

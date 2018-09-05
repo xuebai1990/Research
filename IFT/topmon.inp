@@ -1,0 +1,110 @@
+
+ &io
+     io_output=           2
+     run_num=           1
+     suffix=a
+     L_movie_xyz= F
+ /
+
+
+ &system
+     lnpt= T
+     lgibbs= T
+     lgrand= F
+     lanes= F
+     lvirial= F
+     lmipsw= F
+     lexpee= F
+     ldielect= F
+     lpbc= T
+     lpbcx= T
+     lpbcy= T
+     lpbcz= T
+     lfold= T
+     lijall= F
+     lchgall= F
+     lewald= T
+     lcutcm= T
+     lshift= F
+     ldual= T
+     L_Coul_CBMC= T
+     lneigh= F
+     lexzeo= F
+     lslit= F
+     lgraphite= F
+     lsami= F
+     lmuir= F
+     lelect_field= F
+     lgaro= F
+     lionic= F
+     L_Ewald_Auto= T
+     lmixlb= T
+     lmixjo= F
+     L_spline= F
+     L_linear= F
+     L_vib_table= F
+     L_bend_table= F
+     L_elect_table= F
+ /
+
+
+ATOMS
+!i type(i) epsi(i) sigi(i) q(i) mass(i) chemid(i) chname(i) [Angstrom, Kelvin, a.u.]; type 1: Lennard-Jones
+1 1   93.2 3.1589 0.0000  15.99900  O    #TIP4P/2005
+2 1    0.0 0.000 0.5564   1.00790  H    #TIP4P/2005
+3 1    0.0 0.000 -1.1128  0.00000  M    #TIP4P/2005
+4 1   30.7 3.600 -0.093   12.01100 C    #TraPPE-EH aromatic carbon
+5 1   30.7 3.600 -0.106   12.01100 C    #TraPPE-EH aromatic carbon
+6 1   30.7 3.600 -0.042   12.01100 C    #TraPPE-EH aromatic carbon
+7 1   30.7 3.600 -0.106   12.01100 C    #TraPPE-EH aromatic carbon
+8 1   30.7 3.600 -0.093   12.01100 C    #TraPPE-EH aromatic carbon
+9 1   30.7 3.600 -0.101   12.01100 C    #TraPPE-EH aromatic carbon
+10 1  25.5 2.360  0.091     1.00790 H    #TraPPE-EH aromatic hydrogen
+11 1  25.5 2.360  0.083     1.00790 H    #TraPPE-EH aromatic hydrogen
+12 1  25.5 2.360  0.083     1.00790 H    #TraPPE-EH aromatic hydrogen
+13 1  25.5 2.360  0.091     1.00790 H    #TraPPE-EH aromatic hydrogen
+14 1  25.5 2.360  0.090     1.00790 H    #TraPPE-EH aromatic hydrogen
+15 1  98.0 3.750  0.103    15.03470 CH3  #TraPPE-UA aromatic CH3
+16 1   98.0 3.750  0.0000  15.03470  CH3  #TraPPE-UA
+17 1   46.0 3.950  0.0000  14.02680  CH2  #TraPPE-UA
+18 1   98.0 3.750  0.0000  15.03470  CH3  #TraPPE-UA for impurity
+19 1   46.0 3.950  0.0000  14.02680  CH2  #TraPPE-UA for impurity
+20 1   10.0 4.680  0.0000  13.01910  CH   #TraPPE-UA for impurity
+END ATOMS
+
+NONBOND
+!i j type(ij) epsi(ij) sigi(ij) [Angstrom, Kelvin, a.u.]; type 1: Lennard-Jones
+1 4 1 66.9 3.37945
+1 5 1 66.9 3.37945
+1 6 1 66.9 3.37945
+1 7 1 66.9 3.37945
+1 8 1 66.9 3.37945
+1 9 1  66.9 3.37945
+1 10 1 60.9 2.75945
+1 11 1 60.9 2.75945
+1 12 1 60.9 2.75945
+1 13 1 60.9 2.75945
+1 14 1 60.9 2.75945
+1 15 1 98.4 3.45445
+1 16 1 98.4 3.45445
+1 17 1 67.4 3.55445
+END NONBOND
+
+BONDS
+!i type(i) brvib(i) brvibk(i) [Angstrom]; type 1: U = brvibk * ( r_ij - brvib ) ^ 2
+1 1 1.5400 0.000 # CHx-CHy
+2 1 1.3927 0.000 # CH-CH
+END BONDS
+
+ANGLES
+!i type(i) brben(i) brbenk(i) [degree]; type 1: U = brbenk * ( theta_ijk - brben ) ^ 2 [radian]
+1 1 114.0 31250 #CHx-CH2-CHy
+2 1 112.0 31250 #CHx-CH-CHy
+END ANGLES
+
+DIHEDRALS
+!i type(i) vtt0(i) vtt1(i) vtt2(i) vtt3(i); !!!check vtorso.f, calctor.f!!!
+!===Begin acrylates 06/27/07===
+1 1 0.00 355.03 -68.19 791.32  #CHx-CH2-CH2-CHy
+2 1 -251.06 428.73 -111.85 441.27 #CHx-CH2-CH-CHy
+END DIHEDRALS

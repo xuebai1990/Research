@@ -1,0 +1,86 @@
+
+ &io
+     io_output=           2
+     run_num=           1
+     suffix=a
+     L_movie_xyz= F
+ /
+
+
+ &system
+     lnpt= F
+     lgibbs= T
+     lgrand= F
+     lanes= F
+     lvirial= F
+     lmipsw= F
+     lexpee= F
+     ldielect= F
+     lpbc= T
+     lpbcx= T
+     lpbcy= T
+     lpbcz= T
+     lfold= T
+     lijall= F
+     lchgall= F
+     lewald= T
+     lcutcm= T
+     ltailc= T
+     lshift= F
+     ldual= T
+     L_Coul_CBMC= T
+     lneigh= F
+     lexzeo= F
+     lslit= F
+     lgraphite= F
+     lsami= F
+     lmuir= F
+     lelect_field= F
+     lgaro= F
+     lionic= F
+     L_Ewald_Auto= T
+     lmixlb= T
+     lmixjo= F
+     L_spline= F
+     L_linear= F
+     L_vib_table= F
+     L_bend_table= F
+     L_elect_table= F
+ /
+
+
+ATOMS
+!i type(i) epsi(i) sigi(i) q(i) mass(i) chemid(i) chname(i) [Angstrom, Kelvin, a.u.]; type 1: Lennard-Jones
+1 1 98.0 3.750 0.000 15.0347000 CH3 #TraPPE-UA
+2 1 10.0 4.680 0.171 13.0191000 CH  #TraPPE-UA
+3 1 46.0 3.950 0.000 14.0268000 CH2 #TraPPE-UA CH2
+4 1 232.0 3.620 -0.377 32.0700000 S #Thiol Sulfur
+5 1  0.0 0.000 0.206  1.0078000 H   #Thiol Hydrogen
+END ATOMS
+
+NONBOND
+!i j type(ij) epsi(ij) sigi(ij) [Angstrom, Kelvin, a.u.]; type 1: Lennard-Jones
+END NONBOND
+
+BONDS
+!i type(i) brvib(i) brvibk(i) [Angstrom]; type 1: U = brvibk * ( r_ij - brvib ) ^ 2
+1 1 1.540 0.000 # CHx-CHy
+2 1 1.820 0.000 # CHx-S
+3 1 1.340 0.000 # S-H
+END BONDS
+
+ANGLES
+!i type(i) brben(i) brbenk(i) [degree]; type 1: U = brbenk * ( theta_ijk - brben ) ^ 2 [radian]
+1 1 112.0 31250 # CHx-CH-CHy
+2 1 114.0 31250 # CHx-CH2-S
+3 1 114.0 31250 # CHx-CH2-CHy
+4 1  96.0 16915 # CHx-S-H
+END ANGLES
+
+DIHEDRALS
+!i type(i) vtt0(i) vtt1(i) vtt2(i) vtt3(i); !!!check vtorso.f, calctor.f!!!
+!===Begin acrylates 06/27/07===
+1 1 0.00 355.03 -68.19 791.32 # C-C-C-C
+2 1 0.00 0.00    0.00  400.00 # C-C-S-H
+3 1 -251.06 428.73 -111.85 441.27 # CHx-CH2-CH-S
+END DIHEDRALS

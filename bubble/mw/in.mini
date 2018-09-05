@@ -1,0 +1,52 @@
+#MW water viscosity and difussion constant
+
+# Set up variables
+variable seed equal 1234
+variable dt equal 5.0
+
+variable watMoleMass equal 18.0153 # /(g/mol)
+variable nAvog equal 6.0221415e23 # Avogadro's number
+variable watMoleculeMass equal (${watMoleMass}/${nAvog}) # /(g/molecule)
+variable A3_in_cm3 equal 1e-24 # Angstrom^3 in cm^3
+#variable nAtoms equal 1000
+variable nMolecules equal 1711
+
+variable Text equal 298.0
+
+variable V equal vol
+variable T equal 298.0
+variable kB equal 1.3806504e-23
+variable atm2Pa equal 101325.0
+variable A2m equal 1.0e-10
+variable fs2s equal 1.0e-15
+variable convert equal ${atm2Pa}*${atm2Pa}*${fs2s}*${A2m}*${A2m}*${A2m}
+
+# Set up problem
+units real
+atom_style atomic
+#lattice custom 3.33 a1 1.00 0.00 0.00 a2 0.00 1.00 0.00 a3 0.00 0.00 1.00 basis 0.50 0.50 0.50
+region simbox block 0 40 0 40 0 40
+create_box 1 simbox
+create_atoms 1 random ${nMolecules} ${seed} simbox
+mass 1 18.015 # mw H2O
+
+pair_style sw
+pair_coeff * * h2o.sw H2O
+
+# Define molecular group
+group water type 1
+
+# Initialize velocity
+velocity all create ${Text} ${seed}
+
+# Control neighbor list
+neighbor 2.0 bin
+neigh_modify every 1 delay 0 check yes
+
+# Set time step
+timestep ${dt}
+
+# Sytem minimization
+minimize 1.0e-4 1.0e-6 100 1000
+
+write_restart restart.wat
